@@ -1,0 +1,55 @@
+# === Python / Django ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environnements virtuels
+.env
+.env.*
+*.env
+venv/
+env/
+.venv/
+.ENV/
+
+# Base de données SQLite locale
+*.sqlite3
+db.sqlite3
+
+# Django migrations (optionnel - décommenter si souhaité)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Fichiers statiques collectés
+staticfiles/
+media/
+
+# === Node.js / React (Frontend) ===
+node_modules/
+dist/
+.cache/
+*.local
+
+# Vite build artifacts
+FRONTEND/MecaLink/dist/
+
+# === IDE & OS ===
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# === Sécurité ===
+*.pem
+*.key
+*.p12
+*.pfx

@@ -25,12 +25,35 @@ SECRET_KEY = 'django-insecure-o&vohc4f)#_qee8k=(4jv_3&*el$0es++4fjl^s7sh_&m)g6l9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",   # Vite React dev server
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",   # Create React App dev server
+    "http://127.0.0.1:3000",
+]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "origin",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
+    'corsheaders',
+    'users',
+    'vehicles',
+    'breakdowns',
+    'payments',
+    'interventions',
+    'evaluations',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +63,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,8 +98,12 @@ WSGI_APPLICATION = 'MecaLink.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mecalink_db',      # Le nom de votre base de données PostgreSQL
+        'USER': 'postgres',         # Votre nom d'utilisateur
+        'PASSWORD': '3432',       # Votre mot de passe
+        'HOST': 'localhost',        # Ou '127.0.0.1'
+        'PORT': '5432',             # Port par défaut de PostgreSQL
     }
 }
 
@@ -125,3 +153,29 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+# PayGate Global Integration Configuration
+import os
+
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    with open(env_file, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                os.environ.setdefault(key.strip(), value.strip())
+
+PAYGATE_API_KEY = os.getenv('PAYGATE_API_KEY', '49afe855-dcff-4cbb-8026-9e8b9eb9627a')
+PAYGATE_CALLBACK_URL = os.getenv('PAYGATE_CALLBACK_URL', 'https://jailhouse-jeeringl.ngrok-free.app/api/payments/paygate-webhook/')
+PAYGATE_LIVE_MODE = os.getenv('PAYGATE_LIVE_MODE', 'True').lower() in ('true', '1', 't')
+
+PAYGATE_INITIATE_URL = "https://paygateglobal.com/api/v1/pay"
+PAYGATE_VERIFY_URL = "https://paygateglobal.com/api/v1/status"
